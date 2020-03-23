@@ -1,0 +1,336 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <!-- <link rel="stylesheet" href="css/bootstrap4-executive-suite.css"> -->
+    <!-- <link rel="stylesheet" href="https://bootswatch.com/4/pulse/bootstrap.css"> -->
+    <link rel="stylesheet" href="{% static 'css/memo.css' %}">
+
+    <title>51memo x bootstrap</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">51MEMO</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">{{ siteinfo.banner }}</h1>
+            <p class="lead">美好的一天开始了.</p>
+            <hr class="my-4">
+            <p>快规划一下今天要做的事情吧！</p>
+            <p class="lead">
+                <a class="btn btn-primary btn-lg" href="#" role="button" data-toggle="modal" data-target="#addModalCenter">添加</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addModalCenter" tabindex="-1" role="dialog" aria-labelledby="addModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalCenterTitle">添加新备忘信息</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="memo-title" class="col-form-label">概要</label>
+                            <input type="text" class="form-control" id="memo-title">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">具体信息</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- modify Modal -->
+     <div class="modal fade" id="modifyModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalTitle"
+     aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="modifyModalTitle">修改备忘信息</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <form>
+                     <div class="form-group">
+                         <label for="memo-title" class="col-form-label">概要</label>
+                         <input type="text" class="form-control" id="modify-memo-title">
+                     </div>
+                     <div class="form-group">
+                         <label for="message-text" class="col-form-label">具体信息</label>
+                         <textarea class="form-control" id="modify-message-text"></textarea>
+                     </div>
+                 </form>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                 <button type="button" class="btn btn-primary">保存</button>
+             </div>
+         </div>
+     </div>
+ </div>
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item  list-group-item-action active">今天</li>
+                    {% for todo in todo_today %}
+                    <li class="list-group-item list-group-item-{{todo.class_type}}">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{todo.title}}" id="{{todo.id}}">
+                                    <label class="form-check-label" for="{{todo.id}}">
+                                        {{todo.title}} | {{todo.updated | naturalday}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="btn-group float-right d-none" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-secondary"  data-toggle="modal" data-target="#modifyModal">修改</button>
+                                    <button type="button" class="btn btn-danger" data-id="{{ todo.id }}">删除</button>
+
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            移动
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <a class="dropdown-item" href="#">明天</a>
+                                            <a class="dropdown-item" href="#">下一周</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <hr class="my-4">
+
+                <ul class="list-group">
+                    <li class="list-group-item  list-group-item-action active">明天</li>
+                    {% for todo in todo_tomorrow %}
+                    <li class="list-group-item list-group-item-{{todo.class_type}}">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{todo.title}}" id="{{todo.id}}">
+                                    <label class="form-check-label" for="{{todo.id}}">
+                                        {{todo.title}} | {{todo.updated | naturalday}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="btn-group float-right d-none" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-secondary"  data-toggle="modal" data-target="#modifyModal">修改</button>
+                                    <button type="button" class="btn btn-danger" data-id="{{ todo.id }}">删除</button>
+
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            移动
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <a class="dropdown-item" href="#">明天</a>
+                                            <a class="dropdown-item" href="#">下一周</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <hr class="my-4">
+
+                <ul class="list-group">
+                    <li class="list-group-item  list-group-item-action active">下一周</li>
+                    {% for todo in todo_next_week %}
+                    <li class="list-group-item list-group-item-{{todo.class_type}}">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{todo.title}}" id="{{todo.id}}">
+                                    <label class="form-check-label" for="{{todo.id}}">
+                                        {{todo.title}} | {{todo.updated | naturalday}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="btn-group float-right d-none" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-secondary"  data-toggle="modal" data-target="#modifyModal">修改</button>
+                                    <button type="button" class="btn btn-danger" data-id="{{ todo.id }}">删除</button>
+
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            移动
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <a class="dropdown-item" href="#">明天</a>
+                                            <a class="dropdown-item" href="#">下一周</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="col col-4">
+                <ul class="list-group">
+                    <p class="lead">本周总结</p>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        进行中
+                        <span class="badge badge-primary badge-pill">{{ todo_doing.count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        已完成
+                        <span class="badge badge-primary badge-pill">{{ todo_done.count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        已放弃
+                        <span class="badge badge-primary badge-pill">1</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </main><!-- /.container -->
+
+    {% csrf_token %}
+
+    <footer class="container py-5">
+            <div class="row">
+              <div class="col-12 col-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mb-2"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line><line x1="7.38" y1="12" x2="13.12" y2="2.06"></line><line x1="9.69" y1="16" x2="3.95" y2="6.06"></line><line x1="14.31" y1="16" x2="2.83" y2="16"></line><line x1="16.62" y1="12" x2="10.88" y2="21.94"></line></svg>
+                <small class="d-block mb-3 text-muted">&copy; 2017-2018</small>
+              </div>
+              {% for col in siteinfo.footer.col_set.all %}
+              <div class="col-6 col-md">
+                <h5>{{ col.title }}</h5>
+                <ul class="list-unstyled text-small">
+                {% for item in col.item_set.all %}
+
+                  <li><a class="text-muted" href="{{ item.url }}">{{ item.name }}</a></li>
+                {% endfor %}
+                  
+                </ul>
+              </div>
+              {% endfor %}
+            </div>
+          </footer>
+    <!-- Bootstrap core JavaScript
+              ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <script>
+        $(function () {
+            // 是否显示操作按钮
+            $('.list-group-item').hover(function () {
+                const div = $(this).find('.btn-group')[0];
+                console.log(div);
+                if (div) {
+                    $(div).removeClass('d-none');
+                }
+                // 1.找到删除按钮
+                // 2.发送删除的请求
+                // 3.刷新页面
+                $(div).find('.btn.btn-danger').click(function (){
+                    // alert('delete');
+                    const id = $(this).data('id');
+                    console.log(id);
+                    const url = id + '/delete/'
+                    $.post(url, {
+                        'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val()
+                    }, function(data){
+                        // console.log(data);
+                        window.location.reload();
+                    })
+                })
+            }, function () {
+                const div = $(this).find('.btn-group')[0];
+                // console.log(div);
+                if (div) {
+                    $(div).addClass('d-none');
+                }
+            });
+
+            // 修改信息
+            $('#modifyModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                console.log(button);
+                var modal = $(this);
+                var text = button.parent().parent().prev().find('.form-check-input').val()
+                console.log(text);
+                modal.find('#modify-memo-title').val(text);
+            })
+        })
+    </script>
+</body>
+
+</html>
